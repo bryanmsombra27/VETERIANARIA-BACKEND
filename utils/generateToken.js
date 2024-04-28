@@ -1,3 +1,5 @@
+import jwt from "jsonwebtoken";
+
 export const generateTokenAndCookie = async (res, findUser) => {
   try {
     const token = await jwt.sign(

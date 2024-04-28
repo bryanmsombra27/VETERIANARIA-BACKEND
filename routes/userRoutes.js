@@ -12,7 +12,8 @@ import { admin, protect } from "../middlewares/authMiddleware.js";
 const router = Router();
 
 router.get("/", protect, admin, getUsers);
-router.post("/", protect, admin, createUsers);
+// router.post("/", protect, admin, createUsers);
+router.post("/", createUsers);
 router.post("/login", login);
 router.post("/logout", logoutUser);
 router.get("/profile", protect, getUserProfile);

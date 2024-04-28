@@ -13,7 +13,7 @@ const login = async (req, res) => {
     if (!findUser) {
       throw new Error("user not found");
     }
-    if (!findUser.matchPassword(password)) {
+    if (!(await findUser.matchPassword(password))) {
       throw new Error("invalid email or password");
     }
 
@@ -21,6 +21,12 @@ const login = async (req, res) => {
 
     return res.status(200).send({
       message: "user log in successfully",
+      user: {
+        _id: findUser._id,
+        name: findUser.name,
+        email: findUser.email,
+        isAdmin: findUser.isAdmin,
+      },
     });
   } catch (error) {
     console.log(error);
