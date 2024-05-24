@@ -6,9 +6,6 @@ const protect = async (req, res, next) => {
 
   try {
     token = req.cookies.jwt;
-    console.log(token, "TOKEN RECIBIDO ");
-    console.log(req.cookies, "COOKIE ");
-    console.log(req, "REQUEST ");
     if (token) {
       const decoded = jwt.verify(token, process.env.JWT_WEB_TOKEN_KEY);
       const user = await User.findById(decoded.id).select("-password");

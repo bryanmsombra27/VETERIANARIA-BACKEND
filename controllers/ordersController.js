@@ -1,8 +1,12 @@
 import Order from "../models/Order.js";
+import { Types } from "mongoose";
 
 const getMyOrders = async (req, res) => {
   try {
-    const orders = Order.find({
+    console.log(req.user._id, "USER ID");
+    console.log(req.user, "USER OBJECT");
+
+    const orders = await Order.find({
       user: req.user._id,
     });
     return res.status(200).send({
@@ -62,7 +66,7 @@ const getOrderById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const order = Order.findById(id).populate("user", "name email");
+    const order = await Order.findById(id).populate("user", "name email");
 
     if (!order) {
       throw new Error("Order not found");
@@ -73,7 +77,7 @@ const getOrderById = async (req, res) => {
       order,
     });
   } catch (error) {
-    console.log(error);
+    console.log(error, "ERRROR OBTENIENDO UNA ORDEN");
     return res.status(404).send({
       message: error.message,
     });
@@ -81,6 +85,26 @@ const getOrderById = async (req, res) => {
 };
 const updateOrderToPaid = async (req, res) => {
   try {
+    const order = await Order.findById(req.params.id);
+
+    if (order) {
+      order.isPaid = true;
+      order.paidAt = Date.now();
+      order.paymentResult = {
+        id: req.body.id,
+        status: req.body.status,
+        update_time: req.body.update_time,
+        email_address: req.body.email_address,
+      };
+      const updatedOrder = await order.save();
+      console.log(updatedOrder, "ORDEN ENCONTRADA");
+      return res.status(200).send({
+        message: "Order paid successfully!",
+        order: updatedOrder,
+      });
+    } else {
+      throw new Error("Order not found");
+    }
   } catch (error) {
     console.log(error);
     return res.status(400).send({
