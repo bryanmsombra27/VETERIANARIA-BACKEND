@@ -1,10 +1,13 @@
 import { Router } from "express";
 import {
   createUsers,
+  deleteUser,
+  getUser,
   getUserProfile,
   getUsers,
   login,
   logoutUser,
+  updateUser,
   updateUserProfile,
 } from "../controllers/userController.js";
 import { admin, protect } from "../middlewares/authMiddleware.js";
@@ -19,8 +22,9 @@ router.post("/logout", logoutUser);
 router.get("/profile", protect, getUserProfile);
 router.put("/profile", protect, updateUserProfile);
 
-router.get("/:id", protect, admin, getUsers);
-router.put("/:id", protect, admin, getUsers);
-router.delete("/:id", protect, admin, getUsers);
+router.get("/", protect, admin, getUsers);
+router.get("/:id", protect, admin, getUser);
+router.delete("/:id", protect, admin, deleteUser);
+router.put("/:id", protect, admin, updateUser);
 
 export default router;

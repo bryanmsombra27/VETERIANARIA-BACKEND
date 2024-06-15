@@ -3,9 +3,6 @@ import { Types } from "mongoose";
 
 const getMyOrders = async (req, res) => {
   try {
-    console.log(req.user._id, "USER ID");
-    console.log(req.user, "USER OBJECT");
-
     const orders = await Order.find({
       user: req.user._id,
     });
@@ -114,6 +111,20 @@ const updateOrderToPaid = async (req, res) => {
 };
 const updateOrderToDelivered = async (req, res) => {
   try {
+    const order = await Order.findById(req.params.id);
+
+    if (order) {
+      order.isDelivered = true;
+      order.deliveredAt = Date.now();
+
+      const updatedOrder = await order.save();
+      return res.status(200).send({
+        message: "Order paid successfully!",
+        order: updatedOrder,
+      });
+    } else {
+      throw new Error("Order not found");
+    }
   } catch (error) {
     console.log(error);
     return res.status(400).send({
@@ -123,6 +134,12 @@ const updateOrderToDelivered = async (req, res) => {
 };
 const getAllOrders = async (req, res) => {
   try {
+    const orders = await Order.find({}).populate("user", "id name");
+
+    return res.status(200).send({
+      message: "all orders",
+      orders,
+    });
   } catch (error) {
     console.log(error);
     return res.status(400).send({

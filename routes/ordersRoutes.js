@@ -13,7 +13,7 @@ const router = Router();
 
 //ADMIN FUNCTIONALITY
 router.get("/", protect, admin, getAllOrders);
-router.get("/:id/delivered", protect, admin, updateOrderToDelivered);
+router.put("/:id/delivered", protect, admin, updateOrderToDelivered);
 
 //USER FUNCTIONALITY
 router.get("/myOrders", protect, getMyOrders);

@@ -37,11 +37,83 @@ const login = async (req, res) => {
 };
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find().select("-password");
 
     return res.status(200).send({
       message: "Users found",
       users,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(404).send({
+      message: error.message,
+    });
+  }
+};
+const getUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id).select("-password");
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return res.status(200).send({
+      message: "Users found",
+      user,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(404).send({
+      message: error.message,
+    });
+  }
+};
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+
+    if (user.isAdmin) {
+      throw new Error("Admin user can not be deleted!");
+    }
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+    await User.findByIdAndDelete(id);
+
+    return res.status(200).send({
+      message: "User delete successfully!",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(404).send({
+      message: error.message,
+    });
+  }
+};
+const updateUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    user.isAdmin = req.body.isAdmin || user.isAdmin;
+
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+    await user.save();
+
+    return res.status(200).send({
+      message: "User updated successfully!",
+      user,
     });
   } catch (error) {
     console.log(error);
@@ -137,11 +209,15 @@ const updateUserProfile = async (req, res) => {
     });
   }
 };
+
 export {
   login,
-  getUsers,
   logoutUser,
-  createUsers,
   getUserProfile,
   updateUserProfile,
+  getUsers,
+  getUser,
+  createUsers,
+  deleteUser,
+  updateUser,
 };
